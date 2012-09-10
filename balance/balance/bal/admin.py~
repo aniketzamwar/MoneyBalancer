@@ -1,0 +1,6 @@
+from django.contrib import admin
+from balance.bal.models import Transaction, Balancer, Comments
+
+admin.site.register(Transaction)
+admin.site.register(Balancer)
+admin.site.register(Comments)

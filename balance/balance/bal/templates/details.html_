@@ -1,0 +1,30 @@
+<html>
+<head><title>Details</title>
+<link rel="stylesheet" href="{{ STATIC_URL }}bootstrap/css/bootstrap.css" type="text/css" />
+<script type="text/javascript" src="{{ STATIC_URL }}bootstrap/js/bootstrap.js"></script>
+</head>
+<body>
+{% if errors %}
+  <ul style="color:red;list-style-type:none;">
+    {% for error in errors %}
+    <li>{{ error }}</li>
+    {% endfor %}
+  </ul>
+<br/>
+{% endif %}
+{% if values %}
+    <b>Transaction Details</b><br>
+    Title:       {{ trans.trans_name }}<br />
+    Description: {{ trans.trans_description }}<br />
+    Date:        {{ trans.trans_amount }}<br />
+    
+    <b>Division</b><br />
+    {% for value in values %}
+       {{ value.trans_member.get_full_name }} : $ {{ value.amount }}<br/>    
+    {% endfor %}
+{% else %}
+<b>No Entry found</b>
+{% endif %}
+
+</body>
+</html>

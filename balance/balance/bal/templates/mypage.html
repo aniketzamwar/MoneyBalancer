@@ -1,0 +1,131 @@
+<html>
+<head><title>My Page</title>
+<link rel="stylesheet" href="{{ STATIC_URL }}bootstrap/css/bootstrap.css" type="text/css" />
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}bootstrap/js/bootstrap.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+  $("a[data-toggle=modal]").click(function() {
+      var target, url;
+      target = $(this).attr('data-target');
+      url = $(this).attr('href');
+      return $(target).load(url);
+   })
+});
+</script>
+</head>
+<body>
+{% load poll_extras %}
+<h1 align="center">mB - money Balancer</h1>
+<div class="pull-right">Logged in as {{username}} <a href="http://127.0.0.1:8000/logout/" class="btn btn-inverse" style="margin-right: 25px;">Logout</a></div>
+<div class="container">
+<h4>List of Expenses</h4>
+{% if values %}
+  <table width="1000" class="table-striped table-bordered table-hover table ">
+    <tr>
+      <th>Title</th>
+      <th>Description</th>
+      <th>Date</th>
+      <th>Amount</th>
+      <th>Return or Get</th>
+      <th>Transaction Owner</th>
+    </tr>
+    {% for value in values %}
+    <tr>
+      <td><a href="/trans/{{ value.trans.id }}" class="btn btn-info" data-toggle="modal" data-target="#modal">{{value.trans.trans_name}}</a></td>      
+      <td>{{value.trans.trans_description}}</td>
+      <td>{{value.trans.trans_date}}</td>
+      <td>$ {{value.trans.trans_amount}}</td>
+      {% if myid == value.trans.paidby_id %}
+         <td>Get $ {{ value.trans.trans_amount|subtract:value.amount }}</td>
+	 <td>Me</td>
+      {% else %}
+	 <td>Return $ {{ value.amount }}</td>
+	 <td>{{ value.trans.paidby }}</td>
+      {% endif %}
+    </tr>
+    {% endfor %}
+  </table>
+<div class="modal fade" id="modal"></div>
+{% else %}
+<b>No Transactions</b>
+{% endif %}
+</div>
+<div class="container">
+<h5>New Entry</h5>
+{% if status %}
+<div class="alert alert-info">{{status}}</div>
+{% endif %}
+{% if errors %}
+<div class="alert alert-error">
+  <ul style="list-style-type:none;">
+    {% for error in errors %}
+    <li>{{ error }}</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}
+  <form action="/add/" method="post" class="form-horizontal">
+    <div class="control-group">
+      <label class="control-label" for="transTitle">Title</label>
+      <div class="controls">
+	<input type="text" name="title" id="transTitle"/>
+      </div>
+    </div>
+    <div class="control-group">
+      <label class="control-label" for="transAmount">Amount</label>
+      <div class="controls">
+	<input type="text" name="amount" id="transAmount"/>
+      </div>
+    </div>
+    <div class="control-group">
+      <label class="control-label" for="transDate">Transaction Date</label>
+      <div class="controls">
+	<input type="date" name="date" id="transDate"/> (YYYY-MM-DD)
+      </div>
+    </div>
+    <div class="control-group">
+      <label class="control-label" for="transDesc">Description</label>
+      <div class="controls">
+	<textarea rows="4" name="desc" id="transDesc"> </textarea>
+      </div>
+    </div>
+    <div class="control-group">
+      <label class="control-label">Transaction Members</label>
+      <div class="controls">
+	<input type="checkbox" name="member" value="{{myid}}"/>Me<br />
+	{% if friends %}
+        {% for friend in friends %}
+        <input type="checkbox" name="member" value="{{friend.friend_with.id}}" />{{friend.friend_with.first_name}} {{friend.friend_with.last_name}} - ({{friend.friend_with.email}})<br />
+        {% endfor %}
+      {% endif %}
+      {% if mfriends %}
+         {% for friend in mfriends %}
+        <input type="checkbox" name="member" value="{{friend.a_user.id}}" />{{friend.a_user.first_name}} {{friend.a_user.last_name}} - ({{friend.a_user.email}})<br />
+         {% endfor %}
+       {% endif %}
+      </div>
+    </div>
+    <button type="submit" value="Add Transaction" class="btn"/>Add Transaction</button>
+</form>
+</div>
+
+<!--a href="#myModal" role="button" class="btn" data-toggle="modal">Add Transaction</a-->
+<!--a href="#myModal" role="button" class="btn" data-toggle="modal">Add Transaction</a>
+<div class="modal" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Modal header</h3>
+  </div>
+  <div class="modal-body">
+    <p>One fine body…</p>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <button class="btn btn-primary">Save changes</button>
+  </div>
+</div-->
+
+</body>
+
+</html>
